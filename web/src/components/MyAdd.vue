@@ -60,19 +60,19 @@
         <el-input v-model="person.mother"></el-input>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="submitForm('addPerson')"
+        <el-button type="info" @click="submitForm('addPerson')"
           >立即创建</el-button
         >
-        <el-button @click="resetForm('person')">重置</el-button>
       </el-form-item>
     </el-form>
   </div>
 </template>
 
 <script>
+import { pinyin } from "pinyin-pro";
 export default {
   name: "MyAdd",
-  props: ["personList"],
+  props: ["personList", "qSort_name","binSearch"],
   data() {
     return {
       person: {
@@ -87,6 +87,7 @@ export default {
         job: "",
         father: "",
         mother: "",
+        spelling: "",
       },
       rules: {
         name: [
@@ -127,21 +128,25 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          if(this.person.deaddate === ""){
-            this.person.deaddate = "在世"
+          if (this.person.deaddate === "") {
+            this.person.deaddate = "在世";
           }
-          this.personList.push(this.person)
-          this.$bus.$emit('addData')
+          this.person.spelling = pinyin(this.person.name, { toneType: "none" })
+            .split(" ")
+            .join("");
+          this.$store.state.personList.push(JSON.parse(JSON.stringify(this.person)));
+          this.$store.state.personList = this.qSort_name(
+            this.$store.state.personList
+          );
+          let insIndex = this.binSearch(pinyin(this.person.name,{toneType : "none"}).split(' ').join(''))
+          this.$bus.$emit("addData",insIndex);
           alert("添加成功");
+          this.$refs[formName].resetFields();
         } else {
           console.log("Error");
           return false;
         }
       });
-    },
-    resetForm(formName) {
-      this.$refs[formName].resetFields();
-      console.log(this.person);
     },
   },
 };

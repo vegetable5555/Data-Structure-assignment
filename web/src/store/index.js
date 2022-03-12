@@ -13,7 +13,8 @@ const mutations = {
 }
 
 const state = {
-  page: 0
+  page: 0,
+  personList:[]
 }
 
 export default new Vuex.Store({

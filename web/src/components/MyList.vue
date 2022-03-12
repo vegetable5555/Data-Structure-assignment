@@ -1,9 +1,34 @@
 <template>
   <div class="list-wrapper">
+    <!-- 人员查找 -->
+    <div class="op-wrapper">
+      <el-button v-if="!sorted" @click="sorted = true" type="info" round
+        >按出生年份排序</el-button
+      >
+      <el-button v-if="sorted" @click="sorted = false" type="info" round
+        >默认排序</el-button
+      >
+      <div class="search-wrapper">
+        <span>姓名：</span>
+        <el-input
+          v-model="searchName"
+          @keydown.enter.native="search"
+        ></el-input>
+        <el-button @click="search" type="info" round
+          ><i class="el-icon-search"></i><span>查找</span></el-button
+        >
+      </div>
+    </div>
+
     <!-- 人员信息展示 -->
     <el-table
-      :data="personList"
-      height="700"
+      :data="
+        sorted
+          ? sortedPersonList_date
+          : searching
+          ? searchPerson
+          : this.$store.state.personList
+      "
       style="width: 100%"
       :current-row-key="1"
     >
@@ -17,7 +42,7 @@
       <el-table-column prop="height" label="身高"> </el-table-column>
       <el-table-column prop="education" label="学历"> </el-table-column>
       <el-table-column prop="job" label="职业"> </el-table-column>
-      <el-table-column fixed="right" label="操作">
+      <el-table-column v-if="!sorted" fixed="right" label="操作">
         <template slot-scope="scope">
           <el-button
             class="edit"
@@ -25,7 +50,7 @@
             size="small"
             @click="
               dialogFormVisible = true;
-              selectIndex = scope.$index;
+              editIndex = scope.$index;
               getPerson();
             "
             >编辑</el-button
@@ -49,6 +74,16 @@
         </template>
       </el-table-column>
     </el-table>
+    <el-button
+      class="exit-search"
+      @click="
+        searching = false;
+        searchName = '';
+      "
+      type="text"
+      v-if="searching"
+      >显示全部人员</el-button
+    >
 
     <!-- 编辑人员信息窗口 -->
     <el-dialog title="人员信息" :visible.sync="dialogFormVisible">
@@ -110,13 +145,19 @@
 </template>
 
 <script>
+import { pinyin } from "pinyin-pro";
 export default {
   name: "MyList",
-  props: ["personList"],
+  props: ["personList", "sortedPersonList_date", "qSort_name", "binSearch"],
   data() {
     return {
       dialogFormVisible: false,
-      selectIndex: 0,
+      sorted: false,
+      searchName: "",
+      editIndex: 0,
+      searchIndex: 0,
+      searching: false,
+      searchPerson: [],
       person: {
         name: "",
         age: "",
@@ -129,6 +170,7 @@ export default {
         job: "",
         father: "",
         mother: "",
+        spelling: "",
       },
       rules: {
         name: [
@@ -170,28 +212,113 @@ export default {
   methods: {
     //删除按钮回调函数
     remove(index) {
-      this.$bus.$emit("removeData", index);
+      if (!this.searching) {
+        this.$bus.$emit("removeData", index);
+      }else{
+        let deleteIndex = this.binSearch(this.searchPerson[0].spelling)
+        this.$bus.$emit("removeData", deleteIndex)
+      }
     },
-    //深拷贝所选人员信息
+    //编辑人员信息时，深拷贝所选人员信息
     getPerson() {
-      this.person = JSON.parse(
-        JSON.stringify(this.personList[this.selectIndex])
-      );
+      if (!this.searching) {
+        this.person = JSON.parse(
+          JSON.stringify(this.$store.state.personList[this.editIndex])
+        );
+      } else {
+        this.person = JSON.parse(
+          JSON.stringify(this.$store.state.personList[this.searchIndex])
+        );
+      }
     },
     //修改提交点击回调函数
     submitForm(formName) {
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-          this.personList.splice(this.selectIndex, 1, this.person);
-          alert("修改成功");
-          this.$bus.$emit("editData", this.selectIndex);
-        } else {
-          return false;
+      //在展示页面的修改
+      if (!this.searching) {
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            this.person.spelling = pinyin(this.person.name, {
+              toneType: "none",
+            })
+              .split(" ")
+              .join("");
+            this.$store.state.personList.splice(this.editIndex, 1, this.person);
+            this.$store.state.personList = this.qSort_name(
+              this.$store.state.personList
+            );
+            this.$bus.$emit("editData");
+            alert("修改成功");
+          } else {
+            return false;
+          }
+        });
+      }
+      //在查询页面的修改
+      else {
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            this.person.spelling = pinyin(this.person.name, {
+              toneType: "none",
+            })
+              .split(" ")
+              .join("");
+            this.$store.state.personList.splice(
+              this.searchIndex,
+              1,
+              this.person
+            );
+            this.$store.state.personList = this.qSort_name(
+              this.$store.state.personList
+            );
+            this.$bus.$emit("editData", this.searchIndex);
+            alert("修改成功");
+            this.searchPerson.splice(0, 1, this.person);
+          } else {
+            return false;
+          }
+        });
+      }
+    },
+    //查询人员函数
+    search() {
+      if (this.$store.state.personList.length === 0) {
+        alert("当前系统内未存储人员信息！");
+        this.searchName = "";
+        return;
+      }
+      if (this.searchName === "") {
+        alert("查询人员名字不能为空！");
+        return;
+      } else {
+        //统一在查询时将页面转化为默认排序的界面
+        this.sorted = false;
+        //获取寻找的人员在列表中的index值
+        this.searchIndex = this.binSearch(
+          //将查询人员的名字的拼音作为参数进行查找
+          pinyin(this.searchName, { toneType: "none" }).split(" ").join("")
+        );
+        //未找到
+        if (this.searchIndex === -1) {
+          alert("系统不存在此人，请检查名字是否输入正确！");
+          //清空输入框
+          this.searchName = "";
+          return;
         }
-      });
+        //展示查询人员
+        this.searching = true;
+        //更新查询人员的数据
+        this.searchPerson.splice(
+          0,
+          1,
+          this.$store.state.personList[this.searchIndex]
+        );
+        //清空输入框
+        this.searchName = "";
+      }
     },
   },
   mounted() {
+    //将日期格式化为xxxx.xx.xx
     Date.prototype.format = function (date) {
       return (
         date.getFullYear() + "." + date.getMonth() + 1 + "." + date.getDate()
@@ -201,7 +328,44 @@ export default {
 };
 </script>
 
-<style>
+<style scope>
+.op-wrapper {
+  display: flex;
+  height: 60px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.op-wrapper .el-button {
+  width: 146px;
+  height: 40px;
+  font-weight: bold;
+  margin-left: 30px;
+}
+
+.op-wrapper .search-wrapper .el-button {
+  margin-right: 20px;
+  font-size: 1em;
+}
+
+.op-wrapper .el-button i {
+  margin-left: -5px;
+}
+
+.search-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.search-wrapper span {
+  width: 100px;
+}
+
+.exit-search {
+  margin-top: 50px;
+  margin-left: calc(50% - 42px);
+}
+
 /* 调整编辑按钮样式 */
 .edit {
   margin-right: 10px;

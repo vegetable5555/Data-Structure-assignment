@@ -48,7 +48,7 @@ export default {
 };
 </script>
 
-<style>
+<style scope>
 /* 导航区域 */
 .nav-wrapper {
   position: fixed;
