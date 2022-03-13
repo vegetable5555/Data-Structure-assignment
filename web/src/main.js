@@ -13,7 +13,9 @@ import {
   DatePicker,
   RadioGroup,
   Radio,
-  Dialog
+  Dialog,
+  Carousel,
+  CarouselItem
 } from 'element-ui'
 
 Vue.config.productionTip = false
@@ -29,6 +31,8 @@ Vue.use(DatePicker)
 Vue.use(RadioGroup)
 Vue.use(Radio)
 Vue.use(Dialog)
+Vue.use(Carousel)
+Vue.use(CarouselItem)
 
 new Vue({
   el:'#app',
