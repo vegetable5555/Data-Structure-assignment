@@ -180,6 +180,7 @@ export default {
       this.ageSum += element.age;
       this.sexCount[element.sex === "男" ? 0 : 1]++;
       this.heightSum += element.height;
+      //更新heightCount
       if (element.height < 150) {
         this.heightCount[0]++;
       } else if (element.height < 160) {
@@ -191,6 +192,7 @@ export default {
       } else {
         this.heightCount[4]++;
       }
+      //更新eduCount
       if (element.education === "小学") {
         this.eduCount[0]++;
       } else if (element.education === "初中") {
