@@ -45,7 +45,7 @@ export default {
 }
 
 :root {
-  --black: #222;
+  --black: rgb(49, 48, 48);
   --white: #fff;
   --grey: rgb(77, 76, 76);
 }

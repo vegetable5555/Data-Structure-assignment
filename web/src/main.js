@@ -1,6 +1,8 @@
 import Vue from 'vue'
 import App from './App.vue'
 import store from './store'
+import ZmTreeOrg from 'zm-tree-org';
+import "zm-tree-org/lib/zm-tree-org.css";
 import {
   Table,
   TableColumn,
@@ -33,6 +35,8 @@ Vue.use(Radio)
 Vue.use(Dialog)
 Vue.use(Carousel)
 Vue.use(CarouselItem)
+
+Vue.use(ZmTreeOrg)
 
 new Vue({
   el:'#app',

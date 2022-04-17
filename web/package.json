@@ -15,7 +15,8 @@
     "pinyin-pro": "^3.8.1",
     "vue": "^2.6.11",
     "vue-router": "^3.5.3",
-    "vuex": "^3.6.2"
+    "vuex": "^3.6.2",
+    "zm-tree-org": "^1.5.1"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.15",

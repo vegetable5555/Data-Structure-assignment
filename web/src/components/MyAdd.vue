@@ -69,12 +69,20 @@
 </template>
 
 <script>
+//引入【pinyin-pro】包，方便将中文名字转换为拼音
 import { pinyin } from "pinyin-pro";
+
 export default {
+  //组件的名字
   name: "MyAdd",
-  props: ["personList", "qSort_name","binSearch"],
+
+  //注册由父组件传递的方法或属性，这里注册的是快排函数及二分查找函数
+  props: ["qSort_name", "binSearch"],
+
+  //定义组件中的数据
   data() {
     return {
+      //临时存储新增人员的信息
       person: {
         name: "",
         age: "",
@@ -88,14 +96,23 @@ export default {
         father: "",
         mother: "",
         spelling: "",
+        id:"",
+        pid:""
       },
+
+      //表单的检验规则
       rules: {
         name: [
+          //【required】属性定义是否为必填项
+          //【message】属性定义报错提示信息
+          //【trigger】属性定义校验表单时机，“blur”表示失去焦点时
           { required: true, message: "请输入名字", trigger: "blur" },
+          //【min】和【max】属性定义所填字符的最大及最小值
           { min: 2, max: 5, message: "长度在 3 到 5 个字符", trigger: "blur" },
         ],
         age: [
           { required: true, message: "请输入年龄" },
+          //【type】属性定义所填数据的类型
           { type: "number", message: "年龄必须为数字值" },
         ],
         birthplace: [
@@ -124,25 +141,66 @@ export default {
       },
     };
   },
+
+  //定义组件中的方法
   methods: {
     submitForm(formName) {
+      //检验表单
       this.$refs[formName].validate((valid) => {
+        //表单检验通过
         if (valid) {
-          if (this.person.deaddate === "") {
-            this.person.deaddate = "在世";
-          }
-          this.person.spelling = pinyin(this.person.name, { toneType: "none" })
-            .split(" ")
-            .join("");
-          this.$store.state.personList.push(JSON.parse(JSON.stringify(this.person)));
-          this.$store.state.personList = this.qSort_name(
-            this.$store.state.personList
+          //找到其父亲的检索位置
+          let fatherIndex = this.binSearch(
+            pinyin(this.person.father, { toneType: "none" }).split(" ").join("")
           );
-          let insIndex = this.binSearch(pinyin(this.person.name,{toneType : "none"}).split(' ').join(''))
-          this.$bus.$emit("addData",insIndex);
-          alert("添加成功");
-          this.$refs[formName].resetFields();
-        } else {
+
+          //判断其父亲是否在家谱中
+          if (fatherIndex === -1) {
+            alert("当前家谱无法找到该父亲，请确认名字是否输入正确！");
+            return false;
+          } 
+          //其父亲在家谱中，进行后续操作
+          else {
+            //更新新增人员【pid】属性，为父亲的【id】属性
+            this.person.pid = this.$store.state.personList[fatherIndex].id
+
+            //更新自己的【id】属性
+            this.person.id = ++this.$store.state.maxId
+            //后台中的【maxId】值会在触发【addData】事件时同步更新
+
+            //将未去世的人的死亡日期改为【在世】
+            if (this.person.deaddate === "") {
+              this.person.deaddate = "在世";
+            }
+
+            //在该组件的【person】中更新【spelling】属性
+            this.person.spelling = pinyin(this.person.name, {
+              toneType: "none",
+            }).split(" ").join("");
+
+            //将新添加的人员信息后插入personList中
+            this.$store.state.personList.push(
+              JSON.parse(JSON.stringify(this.person))
+            );
+
+            //对personList再次进行快排，保证数据有序
+            this.$store.state.personList = this.qSort_name(
+              this.$store.state.personList
+            );
+
+            //找到更新后新增人员的位置，触发【addData】事件，便于后台将数据写入表格
+            let insIndex = this.binSearch(
+              pinyin(this.person.name, { toneType: "none" }).split(" ").join("")
+            );
+            this.$bus.$emit("addData", insIndex);
+            alert("添加成功");
+
+            //将表单清空
+            this.$refs[formName].resetFields();
+          }
+        }
+        //表单检验不通过
+        else {
           console.log("Error");
           return false;
         }

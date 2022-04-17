@@ -28,12 +28,16 @@ const app = express()
 /* 读取表格数据 */
 let workbook = xlsx.readFile('./public/data.xlsx')
 let sheet = workbook.Sheets['Sheet1']
+let sheet2 = workbook.Sheets['Sheet2']
 let data = qSort_name(xlsx.utils.sheet_to_json(sheet))
+let maxId = xlsx.utils.sheet_to_json(sheet2)
 
 /* 处理query参数中的数字参数 */
 let toInt = function (obj) {
     obj['age'] = parseInt(obj['age'])
     obj['height'] = parseInt(obj['height'])
+    obj['id'] = parseInt(obj['id'])
+    obj['pid'] = parseInt(obj['pid'])
 }
 
 /* 响应表格中的数据 */
@@ -43,6 +47,15 @@ app.get('/get', (req, res) => {
     // //响应头
     res.setHeader('Access-Control-Allow-Headers', '*');
     res.send(data)
+})
+
+/* 响应maxId（sheet2） */
+app.get('/getMaxId',(req,res) => {
+      // //设置响应头    设置允许跨域
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      // //响应头
+      res.setHeader('Access-Control-Allow-Headers', '*');
+      res.send(maxId[0])
 })
 
 /* 响应增添操作 */
@@ -55,6 +68,9 @@ app.get('/add', (req, res) => {
     data.splice(index,0,person)
     sheet = xlsx.utils.json_to_sheet(data)
     workbook.Sheets['Sheet1'] = sheet
+    maxId[0]['maxId']++
+    sheet2 = xlsx.utils.json_to_sheet(maxId)
+    workbook.Sheets['Sheet2'] = sheet2
     xlsx.writeFile(workbook,'./public/data.xlsx')
 })
 
