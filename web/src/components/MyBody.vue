@@ -1,6 +1,9 @@
 <template>
   <!-- 内容区 -->
   <div class="body-wrapper">
+    <!-- 首页 -->
+    <MyHome v-show="this.$store.state.page === 0"></MyHome>
+
     <!-- 我的家族页面 -->
     <MyList
       v-show="this.$store.state.page === 1"
@@ -27,6 +30,7 @@
 
 <script>
 //引入各个页面子组件
+import MyHome from './MyHome.vue'
 import MyList from "./MyList.vue";
 import MyAdd from "./MyAdd.vue";
 import MyStatistics from "./MyStatistics.vue";
@@ -40,35 +44,13 @@ export default {
 
   //注册子组件
   components: {
+    MyHome,
     MyList,
     MyAdd,
     MyStatistics,
     MyTree,
   },
 
-  //组件中的数据
-  // data() {
-  //   return {
-  //     personList: [
-  //       {
-  //         name: "",
-  //         age: "",
-  //         birthplace: "",
-  //         birthdate: "",
-  //         deaddate: "",
-  //         sex: "",
-  //         height: "",
-  //         education: "",
-  //         job: "",
-  //         father: "",
-  //         mother: "",
-  //         spelling: "",
-  //         pid:"",
-  //         id:""
-  //       },
-  //     ],
-  //   };
-  // },
   methods: {
     //按出生年份对数组进行快速排序
     qSort_date(personList) {
@@ -210,8 +192,8 @@ export default {
 /* 内容区域 */
 .body-wrapper {
   width: 100%;
+  height: calc(100vh - 60px);
   min-height: 800px;
   background: var(--white);
-  padding: 0 10px;
 }
 </style>

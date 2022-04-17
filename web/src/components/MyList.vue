@@ -2,7 +2,6 @@
   <div class="list-wrapper">
     <!-- 人员查找 -->
     <div class="op-wrapper">
-
       <!-- 两个button用于切换当前展示人员列表的排序方式  PS：两种不同的排列方式分别用不同的列表存储，所以只是切换了展示的列表，并没有对列表重新进行排序 -->
       <el-button v-if="!sorted" @click="sorted = true" type="info" round
         >按出生年份排序</el-button
@@ -13,7 +12,6 @@
 
       <!-- 搜索框容器 -->
       <div class="search-wrapper">
-
         <span>姓名：</span>
 
         <!-- 利用【@keydown】方便用户直接按下回车进行查找 -->
@@ -42,7 +40,7 @@
       style="width: 100%"
       :current-row-key="1"
     >
-    <!-- 定义展示数据的不同字段，通过【prop】属性会自动填充数据 -->
+      <!-- 定义展示数据的不同字段，通过【prop】属性会自动填充数据 -->
       <el-table-column type="index"> </el-table-column>
       <el-table-column prop="name" label="姓名"> </el-table-column>
       <el-table-column prop="age" label="年龄"> </el-table-column>
@@ -90,16 +88,17 @@
     </el-table>
 
     <!-- 该按钮为用户提供退出查找页面的接口 -->
-    <el-button
-      class="exit-search"
-      @click="
-        searching = false;
-        searchName = '';
-      "
-      type="text"
-      v-if="searching"
-      >显示全部人员</el-button
-    >
+    <div class="exit-search">
+      <el-button
+        @click="
+          searching = false;
+          searchName = '';
+        "
+        type="text"
+        v-if="searching"
+        >显示全部人员</el-button
+      >
+    </div>
 
     <!-- 编辑人员信息的表单窗口 -->
     <el-dialog title="人员信息" :visible.sync="dialogFormVisible">
@@ -203,8 +202,8 @@ export default {
         father: "",
         mother: "",
         spelling: "",
-        pid:"",
-        id:""
+        pid: "",
+        id: "",
       },
 
       //定义表单校验的规则
@@ -253,7 +252,6 @@ export default {
 
   //组件中的方法
   methods: {
-
     //删除按钮的回调函数
     remove(index) {
       //不在查找页面时，利用回调函数传入的index，直接对人员列表进行操作
@@ -262,10 +260,10 @@ export default {
         this.$bus.$emit("removeData", index);
       }
       //当前处于查找页面，主要利用二分查找查找出待删除人员的检索位置
-      else{
-        let deleteIndex = this.binSearch(this.searchPerson[0].spelling)
+      else {
+        let deleteIndex = this.binSearch(this.searchPerson[0].spelling);
         //触发事件总线上的【removedata】事件，从而同步后台的数据
-        this.$bus.$emit("removeData", deleteIndex)
+        this.$bus.$emit("removeData", deleteIndex);
       }
     },
 
@@ -277,7 +275,7 @@ export default {
         this.person = JSON.parse(
           JSON.stringify(this.$store.state.personList[this.editIndex])
         );
-      } 
+      }
       //当前处于查找页面，index为【searchIndex】
       else {
         this.person = JSON.parse(
@@ -312,7 +310,7 @@ export default {
             //触发事件总线上的【editData】事件，从而同步后台的数据
             this.$bus.$emit("editData");
             alert("修改成功");
-          } 
+          }
           //校验失败
           else {
             return false;
@@ -332,7 +330,7 @@ export default {
             })
               .split(" ")
               .join("");
-            
+
             //将修改的信息同步到【store】中
             this.$store.state.personList.splice(
               this.searchIndex,
@@ -351,7 +349,7 @@ export default {
 
             //同步查找页面中展示的人员信息
             this.searchPerson.splice(0, 1, this.person);
-          } 
+          }
           //校验失败
           else {
             return false;
@@ -374,10 +372,9 @@ export default {
       if (this.searchName === "") {
         alert("查询人员名字不能为空！");
         return;
-      } 
+      }
       //搜索框不为空，进行搜索操作
       else {
-
         //统一在查询时将页面转化为默认排序的界面，才能显示删除和编辑按钮
         this.sorted = false;
 
@@ -415,7 +412,7 @@ export default {
   mounted() {
     //在Date的原型上绑定一个格式化时间的方法
     Date.prototype.format = function (date) {
-    //将日期格式化为xxxx.xx.xx
+      //将日期格式化为xxxx.xx.xx
       return (
         date.getFullYear() + "." + date.getMonth() + 1 + "." + date.getDate()
       );
@@ -425,6 +422,11 @@ export default {
 </script>
 
 <style scope>
+.list-wrapper {
+  height: 100%;
+  padding: 0 10px;
+}
+
 .op-wrapper {
   display: flex;
   height: 60px;
@@ -459,7 +461,9 @@ export default {
 
 .exit-search {
   margin-top: 50px;
-  margin-left: calc(50% - 42px);
+  width: 100%;
+  display: flex;
+  justify-content: center;
 }
 
 /* 调整编辑按钮样式 */

@@ -4,7 +4,6 @@
     <div class="main-wrapper" :class="{ active: show }">
       <MyHeader></MyHeader>
       <MyBody></MyBody>
-      <!-- <MyFooter></MyFooter> -->
     </div>
   </div>
 </template>
@@ -14,7 +13,6 @@
 import Navigation from "./components/Navigation.vue";
 import MyHeader from "./components/MyHeader.vue";
 import MyBody from "./components/MyBody.vue";
-// import MyFooter from "./components/MyFooter.vue";
 
 export default {
   name: "App",
@@ -27,7 +25,6 @@ export default {
     Navigation,
     MyHeader,
     MyBody,
-    // MyFooter,
   },
   mounted() {
     this.$bus.$on("toggleActive", (show) => {

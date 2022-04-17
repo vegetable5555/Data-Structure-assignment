@@ -213,7 +213,7 @@ export default {
 <style>
 .add-wrapper {
   width: 100%;
-  height: 800px;
+  height: 100%;
 }
 
 .el-form.demo-ruleForm {

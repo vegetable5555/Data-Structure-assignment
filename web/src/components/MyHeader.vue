@@ -5,11 +5,7 @@
       <i v-show="!show" @click="changeShow" class="el-icon-s-fold"></i>
       <i v-show="show" @click="changeShow" class="el-icon-s-unfold"></i>
     </div>
-    <span class="title">我的家族</span>
-    <div class="user">
-      <img src="../assets/user.png" />
-      <span>用户信息</span>
-    </div>
+    <span class="title" v-show="$store.state.page != 0" @click="$store.commit('changePage',0)">首页</span>
   </div>
 </template>
 
@@ -30,13 +26,16 @@ export default {
 };
 </script>
 
-<style>
+<style scope>
 /* 头部区域 */
 .header-wrapper {
   width: 100%;
   height: 60px;
   background: var(--black);
   position: relative;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
 
 .header-wrapper .toggle {
@@ -87,5 +86,9 @@ export default {
 .header-wrapper .user span {
   color: var(--white);
   font-size: 1.25em;
+}
+
+.title{
+  cursor: pointer;
 }
 </style>

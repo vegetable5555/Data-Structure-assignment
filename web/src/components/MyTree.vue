@@ -102,7 +102,6 @@ export default {
       delete person.father;
       delete person.mother;
       delete person.spelling;
-      delete person.generation;
 
       let father = this.map[person.pid];
       //父亲存在
