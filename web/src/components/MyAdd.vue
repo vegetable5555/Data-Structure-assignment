@@ -97,7 +97,8 @@ export default {
         mother: "",
         spelling: "",
         id:"",
-        pid:""
+        pid:"",
+        descendants: "",
       },
 
       //表单的检验规则
@@ -163,6 +164,12 @@ export default {
           else {
             //更新新增人员【pid】属性，为父亲的【id】属性
             this.person.pid = this.$store.state.personList[fatherIndex].id
+
+            //更新父亲的descendants属性
+            this.$store.personList[fatherIndex].descendants++;
+
+            //触发事件总线上的【editData】事件，将该人员的父亲信息同步
+            this.$bus.$emit('editData',fatherIndex)
 
             //更新自己的【id】属性
             this.person.id = ++this.$store.state.maxId

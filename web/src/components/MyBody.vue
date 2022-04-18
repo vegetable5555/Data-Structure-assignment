@@ -176,11 +176,12 @@ export default {
     });
 
     //在事件总线上绑定【editData】事件
-    this.$bus.$on("editData", () => {
+    this.$bus.$on("editData", (index) => {
       axios.get("http://127.0.0.1:8080/edit", {
         //将更新后的【personList】直接作为参数
         params: {
-          personList: this.$store.state.personList,
+          editPerson: this.$store.state.personList[index],
+          editIndex : index
         },
       });
     });

@@ -28,7 +28,6 @@ export default {
   align-items: center;
   flex-direction: column;
   padding: 280px 0;
-  background: skyblue;
 }
 
 .background {

@@ -140,10 +140,10 @@
           <el-input v-model="person.job" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="父亲" prop="father">
-          <el-input v-model="person.father" autocomplete="off"></el-input>
+          <el-input v-model="person.father" autocomplete="off" :disable="true"></el-input>
         </el-form-item>
         <el-form-item label="母亲" prop="mother">
-          <el-input v-model="person.mother" autocomplete="off"></el-input>
+          <el-input v-model="person.mother" autocomplete="off" :disable="true"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -180,7 +180,7 @@ export default {
       sorted: false,
       //存储用户搜索的人员名字
       searchName: "",
-      //记录用户点击编辑的人员的检索位置
+      //记录用户点击编辑的人员的检索位置，当用户点击编辑按钮时对该属性值进行赋值（利用scope.$index），此时所赋的值为该元素在页面所展示列表中的位置
       editIndex: 0,
       //记录用户搜索的人员在列表中的检索位置
       searchIndex: 0,
@@ -204,6 +204,7 @@ export default {
         spelling: "",
         pid: "",
         id: "",
+        descendants: "",
       },
 
       //定义表单校验的规则
@@ -256,14 +257,46 @@ export default {
     remove(index) {
       //不在查找页面时，利用回调函数传入的index，直接对人员列表进行操作
       if (!this.searching) {
-        //触发事件总线上的【removedata】事件，从而同步后台的数据
-        this.$bus.$emit("removeData", index);
+        //判断待删除人员是否有后代记录于家谱中
+        if (this.$store.state.personList[index].descendants == 0) {
+          //获取待删除人员的父亲的索引位置，以便更新其父亲的descendants属性值
+          let fatherIndex = this.binSearch(
+            pinyin(this.$store.state.personList[index].father, {
+              toneType: "none",
+            }).split(" ").
+            join("")
+          );
+
+          //更新store中父亲的descendants
+          this.$store.state.personList[fatherIndex].descendants--;
+
+          //触发事件总线上的【editDate】事件，同步后台数据
+          this.$bus.$emit("editData", fatherIndex);
+
+          //触发事件总线上的【removedata】事件，从而同步后台的数据
+          this.$bus.$emit("removeData", index);
+        } else {
+          //待删除人员存在后代记录于家谱中，不能够删除
+          alert("该人员有后代记录于系统中，无法删除！");
+        }
       }
       //当前处于查找页面，主要利用二分查找查找出待删除人员的检索位置
       else {
         let deleteIndex = this.binSearch(this.searchPerson[0].spelling);
-        //触发事件总线上的【removedata】事件，从而同步后台的数据
-        this.$bus.$emit("removeData", deleteIndex);
+        if (this.searchPerson[0].descendants == 0) {
+          let fatherIndex = this.binSearch(
+            pinyin(this.$store.state.personList[index].father, {
+              toneType: "none",
+            }).split(" ").
+            join("")
+          );
+          this.$store.state.personList[fatherIndex].descendants--;
+          this.$bus.$emit("editData", fatherIndex);
+          //触发事件总线上的【removedata】事件，从而同步后台的数据
+          this.$bus.$emit("removeData", deleteIndex);
+        } else {
+          alert("该人员有后代记录于系统中，无法删除！");
+        }
       }
     },
 
@@ -307,8 +340,11 @@ export default {
               this.$store.state.personList
             );
 
+            //获取重新排序后的人员的检索位置【因为可能更改了姓名，导致人员的位置发生了变化】
+            this.editIndex = this.binSearch(this.person.spelling);
+
             //触发事件总线上的【editData】事件，从而同步后台的数据
-            this.$bus.$emit("editData");
+            this.$bus.$emit("editData", this.editIndex);
             alert("修改成功");
           }
           //校验失败
@@ -342,6 +378,9 @@ export default {
             this.$store.state.personList = this.qSort_name(
               this.$store.state.personList
             );
+
+            //获取重新排序后的人员的检索位置【因为可能更改了姓名，导致人员的位置发生了变化】
+            this.searchIndex = this.binSearch(this.person.spelling);
 
             //触发事件总线上的【editData】事件，从而同步后台的数据
             this.$bus.$emit("editData", this.searchIndex);
@@ -406,17 +445,6 @@ export default {
         this.searchName = "";
       }
     },
-  },
-
-  //生命周期函数，当页面的组件挂载完毕后执行
-  mounted() {
-    //在Date的原型上绑定一个格式化时间的方法
-    Date.prototype.format = function (date) {
-      //将日期格式化为xxxx.xx.xx
-      return (
-        date.getFullYear() + "." + date.getMonth() + 1 + "." + date.getDate()
-      );
-    };
   },
 };
 </script>
