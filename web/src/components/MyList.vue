@@ -140,10 +140,18 @@
           <el-input v-model="person.job" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="父亲" prop="father">
-          <el-input v-model="person.father" autocomplete="off" :disable="true"></el-input>
+          <el-input
+            v-model="person.father"
+            autocomplete="off"
+            disabled
+          ></el-input>
         </el-form-item>
         <el-form-item label="母亲" prop="mother">
-          <el-input v-model="person.mother" autocomplete="off" :disable="true"></el-input>
+          <el-input
+            v-model="person.mother"
+            autocomplete="off"
+            disabled
+          ></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -158,6 +166,10 @@
         >
       </div>
     </el-dialog>
+
+    <div class="toTop" @click="backToTop">
+      <i class="el-icon-arrow-up"></i>
+    </div>
   </div>
 </template>
 
@@ -263,8 +275,9 @@ export default {
           let fatherIndex = this.binSearch(
             pinyin(this.$store.state.personList[index].father, {
               toneType: "none",
-            }).split(" ").
-            join("")
+            })
+              .split(" ")
+              .join("")
           );
 
           //更新store中父亲的descendants
@@ -276,9 +289,8 @@ export default {
           //触发事件总线上的【removedata】事件，从而同步后台的数据
           this.$bus.$emit("removeData", index);
 
-          alert("删除成功！")
+          alert("删除成功！");
           this.searching = false;
-
         } else {
           //待删除人员存在后代记录于家谱中，不能够删除
           alert("该人员有后代记录于系统中，无法删除！");
@@ -291,15 +303,16 @@ export default {
           let fatherIndex = this.binSearch(
             pinyin(this.$store.state.personList[deleteIndex].father, {
               toneType: "none",
-            }).split(" ").
-            join("")
+            })
+              .split(" ")
+              .join("")
           );
           this.$store.state.personList[fatherIndex].descendants--;
           this.$bus.$emit("editData", fatherIndex);
           //触发事件总线上的【removedata】事件，从而同步后台的数据
           this.$bus.$emit("removeData", deleteIndex);
 
-          alert("删除成功！")
+          alert("删除成功！");
           this.searching = false;
         } else {
           alert("该人员有后代记录于系统中，无法删除！");
@@ -452,6 +465,11 @@ export default {
         this.searchName = "";
       }
     },
+
+    // 返回顶部的回调函数
+    backToTop() {
+      document.documentElement.scrollTop = 0;
+    },
   },
 };
 </script>
@@ -538,5 +556,24 @@ export default {
 .el-popconfirm__action .el-button--primary {
   color: var(--white);
   background-color: var(--grey);
+}
+
+.toTop {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  position: fixed;
+  right: 10px;
+  bottom: 100px;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 99999;
+  text-align: center;
+  line-height: 50px;
+  cursor: pointer;
+}
+
+.el-icon-arrow-up {
+  color: var(--white);
+  font-size: 1.5em;
 }
 </style>

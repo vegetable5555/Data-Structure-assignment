@@ -92,14 +92,16 @@ app.get('/edit', (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   //通过query传递的参数为字符串数组，需要通过JSON.parse转换为JSON对象
   let editPerson = JSON.parse(req.query.editPerson)
-  let editIndex = req.query.editIndex
-  data.splice(editIndex,1,editPerson)
+  data.forEach(person => {
+    if(person.id == editPerson.id){
+      Object.assign(person,editPerson)
+    }
+  });
+  data = qSort_name(data)
   sheet = xlsx.utils.json_to_sheet(data)
   workbook.Sheets['Sheet1'] = sheet
   xlsx.writeFile(workbook, './public/data.xlsx')
 })
-
-
 
 /* 启动8080端口服务器 */
 app.listen(8080, () => {

@@ -12,14 +12,9 @@
       :node-drag-end="nodeDragEnd"
       :define-menus="null"
     >
-      <!-- 自定义节点内容 -->
       <template slot-scope="{node}">
           <div class="tree-org-node__text node-label">{{node.name}}</div>
         </template>
-      <!-- 自定义展开按钮 -->
-      <!-- <template v-slot:expand="{node}">
-          <div>{{node.children.length}}</div>
-        </template> -->
     </zm-tree-org>
   </div>
 </template>

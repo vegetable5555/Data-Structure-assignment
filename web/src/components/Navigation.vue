@@ -18,7 +18,6 @@
       <li @click="add_active(4)" :class="{active:this.$store.state.page === 4}">
         <i class="el-icon-edit-outline"></i><span>添加人员</span>
       </li>
-      
     </ul>
   </div>
 </template>
@@ -28,7 +27,6 @@ export default {
   name: "Navigation",
   data(){
     return {
-      // current:1,
       show: false,
     }
   },

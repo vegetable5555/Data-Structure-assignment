@@ -45,10 +45,10 @@
         </el-radio-group>
       </el-form-item>
       <el-form-item label="身高" prop="height" required>
-        <el-input v-model.number="person.height"></el-input>
+        <el-input v-model.number="person.height" placeholder="填写单位为cm，如：175"></el-input>
       </el-form-item>
       <el-form-item label="学历" prop="education" required>
-        <el-input v-model="person.education"></el-input>
+        <el-input v-model="person.education" placeholder="填写小学/初中/高中/大学/无"></el-input>
       </el-form-item>
       <el-form-item label="职业" prop="job" required>
         <el-input v-model="person.job"></el-input>

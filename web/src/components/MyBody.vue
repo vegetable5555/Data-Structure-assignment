@@ -183,7 +183,7 @@ export default {
         //将更新后的【personList】直接作为参数
         params: {
           editPerson: this.$store.state.personList[index],
-          editIndex : index
+          // editIndex : index
         },
       });
     });

@@ -116,10 +116,12 @@ export default {
         this.eduCount[4]++;
       }
     });
+    //为不同的部分创建统计表对象
     this.ageChart = echarts.init(this.$refs["ageChart"]);
     this.sexChart = echarts.init(this.$refs["sexChart"]);
     this.heightChart = echarts.init(this.$refs["heightChart"]);
     this.eduChart = echarts.init(this.$refs["eduChart"]);
+    //设置不同的统计表的属性参数及数据
     this.ageChart.setOption({
       title: {
         text: "家族成员年龄统计",
