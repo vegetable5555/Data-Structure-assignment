@@ -5,23 +5,28 @@
       <i v-show="!show" @click="changeShow" class="el-icon-s-fold"></i>
       <i v-show="show" @click="changeShow" class="el-icon-s-unfold"></i>
     </div>
-    <span class="title" v-show="$store.state.page != 0" @click="$store.commit('changePage',0)">首页</span>
+    <span
+      class="title"
+      v-show="$store.state.page != 0"
+      @click="$store.commit('changePage', 0)"
+      >首页</span
+    >
   </div>
 </template>
 
 <script>
 export default {
   name: "MyHeader",
-  data(){
+  data() {
     return {
-      show:false
-    }
+      show: false,
+    };
   },
   methods: {
-    changeShow(){
-      this.show = !this.show
-      this.$bus.$emit('toggleActive',this.show)
-    }
+    changeShow() {
+      this.show = !this.show;
+      this.$bus.$emit("toggleActive", this.show);
+    },
   },
 };
 </script>
@@ -88,7 +93,7 @@ export default {
   font-size: 1.25em;
 }
 
-.title{
+.title {
   cursor: pointer;
 }
 </style>

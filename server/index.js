@@ -39,7 +39,7 @@ let toInt = function (obj) {
   obj['height'] = parseInt(obj['height'])
   obj['id'] = parseInt(obj['id'])
   obj['pid'] = parseInt(obj['pid'])
-  obj['children'] = parseInt(obj['children'])
+  obj['descendants'] = parseInt(obj['descendants'])
 }
 
 /* 响应表格中的数据 */

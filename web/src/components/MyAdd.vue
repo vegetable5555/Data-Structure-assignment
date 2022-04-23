@@ -96,8 +96,8 @@ export default {
         father: "",
         mother: "",
         spelling: "",
-        id:"",
-        pid:"",
+        id: "",
+        pid: "",
         descendants: "",
       },
 
@@ -159,20 +159,20 @@ export default {
           if (fatherIndex === -1) {
             alert("当前家谱无法找到该父亲，请确认名字是否输入正确！");
             return false;
-          } 
+          }
           //其父亲在家谱中，进行后续操作
           else {
             //更新新增人员【pid】属性，为父亲的【id】属性
-            this.person.pid = this.$store.state.personList[fatherIndex].id
+            this.person.pid = this.$store.state.personList[fatherIndex].id;
 
             //更新父亲的descendants属性
-            this.$store.personList[fatherIndex].descendants++;
+            this.$store.state.personList[fatherIndex].descendants++;
 
             //触发事件总线上的【editData】事件，将该人员的父亲信息同步
-            this.$bus.$emit('editData',fatherIndex)
+            this.$bus.$emit("editData", fatherIndex);
 
             //更新自己的【id】属性
-            this.person.id = ++this.$store.state.maxId
+            this.person.id = ++this.$store.state.maxId;
             //后台中的【maxId】值会在触发【addData】事件时同步更新
 
             //将未去世的人的死亡日期改为【在世】
@@ -180,10 +180,15 @@ export default {
               this.person.deaddate = "在世";
             }
 
+            //将新加入的人员的【descendants】属性值设为0
+            this.person.descendants = 0;
+
             //在该组件的【person】中更新【spelling】属性
             this.person.spelling = pinyin(this.person.name, {
               toneType: "none",
-            }).split(" ").join("");
+            })
+              .split(" ")
+              .join("");
 
             //将新添加的人员信息后插入personList中
             this.$store.state.personList.push(

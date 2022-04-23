@@ -59,7 +59,9 @@ export default {
         return personList;
       }
 
+      //获取支点索引位置（这里取得是中间位置）
       let pivotIndex = Math.floor(personList.length / 2);
+      //定义left和right两个数组。用于存储分类后的左右两部分数组
       let left = [];
       let right = [];
       for (let i = 0; i < personList.length; i++) {

@@ -18,9 +18,6 @@
       <li @click="add_active(4)" :class="{active:this.$store.state.page === 4}">
         <i class="el-icon-edit-outline"></i><span>添加人员</span>
       </li>
-      <!-- <li @click="add_active(5)" :class="{active:this.$store.state.page === 5}">
-        <i class="el-icon-s-tools"></i><span>设置</span>
-      </li> -->
       
     </ul>
   </div>
@@ -32,7 +29,7 @@ export default {
   data(){
     return {
       // current:1,
-      show: false
+      show: false,
     }
   },
   methods: {
@@ -61,8 +58,6 @@ export default {
   overflow: hidden;
   transition: 0.5s;
 }
-
-
 
 .nav-wrapper .nav-title {
   position: absolute;

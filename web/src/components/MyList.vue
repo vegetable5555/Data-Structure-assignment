@@ -275,6 +275,10 @@ export default {
 
           //触发事件总线上的【removedata】事件，从而同步后台的数据
           this.$bus.$emit("removeData", index);
+
+          alert("删除成功！")
+          this.searching = false;
+
         } else {
           //待删除人员存在后代记录于家谱中，不能够删除
           alert("该人员有后代记录于系统中，无法删除！");
@@ -285,7 +289,7 @@ export default {
         let deleteIndex = this.binSearch(this.searchPerson[0].spelling);
         if (this.searchPerson[0].descendants == 0) {
           let fatherIndex = this.binSearch(
-            pinyin(this.$store.state.personList[index].father, {
+            pinyin(this.$store.state.personList[deleteIndex].father, {
               toneType: "none",
             }).split(" ").
             join("")
@@ -294,6 +298,9 @@ export default {
           this.$bus.$emit("editData", fatherIndex);
           //触发事件总线上的【removedata】事件，从而同步后台的数据
           this.$bus.$emit("removeData", deleteIndex);
+
+          alert("删除成功！")
+          this.searching = false;
         } else {
           alert("该人员有后代记录于系统中，无法删除！");
         }
